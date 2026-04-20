@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 # 1. 페이지 설정 및 커스텀 CSS 적용
 st.set_page_config(page_title="🎨 힙한 정관장 대시보드", layout="wide")
 
-# 사이버펑크/네온 스타일 CSS
+# 사이버펑크/네온 스타일 CSS (에러 수정 완료)
 st.markdown("""
 <style>
     /* 전체 배경 및 기본 글자색 */
@@ -71,4 +71,32 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.02);
         border-radius: 20px;
         padding: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.0
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    .chart-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* 액션 아이템 스타일 */
+    .action-item {
+        background: linear-gradient(90deg, rgba(255, 0, 222, 0.1) 0%, rgba(138, 43, 226, 0.1) 100%);
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 15px;
+        border-left: 4px solid #ff00de;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .action-icon {
+        font-size: 1.5rem;
+    }
+    .
