@@ -1,4 +1,3 @@
-%%writefile app.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -42,7 +41,7 @@ st.markdown("""
         margin-bottom: 2.5rem;
     }
 
-    /* 힙한 카드 스타일 (Gradient Border) */
+    /* 힙한 카드 스타일 */
     div[data-testid="stMetric"] {
         background: rgba(255, 255, 255, 0.03);
         border-radius: 15px;
@@ -104,14 +103,14 @@ st.markdown("""
         color: #c9d1d9;
     }
 
-    /* Streamlit 기본 요소 숨기기 (깔끔하게) */
+    /* Streamlit 기본 요소 숨기기 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# 2. 데이터 정의 (동일)
+# 2. 데이터 정의
 MARKETING_DATA = {
     "stats": [
         {"title": "🚀 수도권 판매 성장", "value": "+15%"},
@@ -122,91 +121,4 @@ MARKETING_DATA = {
     "sales": {
         "labels": ['월', '화', '수', '목', '금', '토', '일'],
         "metro": [4000, 4500, 5200, 6100, 7500, 8200, 7800],
-        "local": [2400, 2300, 2200, 2100, 2000, 2500, 2600]
-    },
-    "keywords": {
-        "labels": ['2월', '3월 1주', '3월 2주', '3월 3주', '3월 4주'],
-        "hiking": [100, 110, 130, 160, 210],
-        "tennis": [80, 95, 120, 150, 195]
-    },
-    "age_groups": {"labels": ['⚡️ 2030 사회초년생', '💼 40대 직장인', '🧓 50대 이상', '➕ 기타'], "values": [45, 25, 20, 10]},
-    "actions": [
-        {"icon": "🎁", "title": "편의점 채널 프로모션 최적화", "desc": "사회초년생의 반복 구매 습관 형성을 위한 2+1 및 모바일 바우처 증정"},
-        {"icon": "🎾", "title": "'Active Lifestyle' 캠페인 가동", "desc": "#오운완 테니스/등산 커뮤니티 타겟 SNS 챌린지 및 인플루언서 협업"},
-        {"icon": "💬", "title": "패키지 QC 강화 및 가격 심리 방어", "desc": "개봉 편의성 개선 및 대형마트용 실속형 대용량 패키지 기획"}
-    ]
-}
-
-# 3. 레이아웃 구현
-
-# 헤더 영역
-st.markdown('<h1 class="neon-title">EVERYTIME BALANCE</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Marketing Performance Dashboard // KGC // 2026.04</p>', unsafe_allow_html=True)
-
-# Stats Grid (상단 지표)
-st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-cols = st.columns(4)
-for i, stat in enumerate(MARKETING_DATA["stats"]):
-    with cols[i]:
-        st.metric(label=stat["title"], value=stat["value"])
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.write("") # 간격 조절
-
-# 메인 차트 영역
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.markdown('<div class="chart-title">📍 판매량 현황</div>', unsafe_allow_html=True)
-    df_sales = pd.DataFrame({'요일': MARKETING_DATA["sales"]["labels"], '수도권': MARKETING_DATA["sales"]["metro"], '지방': MARKETING_DATA["sales"]["local"]})
-    fig_sales = px.bar(df_sales, x='요일', y=['수도권', '지방'], 
-                       barmode='group',
-                       color_discrete_map={'수도권': '#ff00de', '지방': '#0ae'}) # 네온 핑크 & 네온 민트
-    fig_sales.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color="#c9d1d9",
-                            xaxis_gridcolor="#333", yaxis_gridcolor="#333")
-    st.plotly_chart(fig_sales, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col2:
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.markdown('<div class="chart-title">📈 키워드 트렌드</div>', unsafe_allow_html=True)
-    df_key = pd.DataFrame({'기간': MARKETING_DATA["keywords"]["labels"], '등산': MARKETING_DATA["keywords"]["hiking"], '테니스': MARKETING_DATA["keywords"]["tennis"]})
-    fig_key = px.line(df_key, x='기간', y=['등산', '테니스'],
-                      color_discrete_map={'등산': '#ff9100', '테니스': '#0ae'},
-                      render_mode='svg')
-    fig_key.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color="#c9d1d9",
-                          xaxis_gridcolor="#333", yaxis_gridcolor="#333")
-    st.plotly_chart(fig_key, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# 하단 영역 (연령 구성 & 액션 아이템)
-col3, col4 = st.columns([1, 1.8])
-
-with col3:
-    st.markdown('<div class="chart-card">', unsafe_allow_html=True)
-    st.markdown('<div class="chart-title">👥 고객 연령 구성</div>', unsafe_allow_html=True)
-    # 힙한 Donut 차트 색상 (Gradient 느낌)
-    fig_age = px.pie(values=MARKETING_DATA["age_groups"]["values"], 
-                     names=MARKETING_DATA["age_groups"]["labels"],
-                     color_discrete_sequence=['#ff00de', '#8a2be2', '#0ae', '#333'], # Pink, Purple, Mint, Gray
-                     hole=0.6)
-    fig_age.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color="#c9d1d9",
-                          showlegend=True, legend=dict(orientation="v", yanchor="middle", y=0.5))
-    st.plotly_chart(fig_age, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with col4:
-    st.markdown('<div class="chart-card" style="height: 100%;">', unsafe_allow_html=True)
-    st.markdown('<div class="chart-title">✅ 핵심 액션 아이템</div>', unsafe_allow_html=True)
-    for action in MARKETING_DATA["actions"]:
-        st.markdown(f'''
-            <div class="action-item">
-                <div class="action-icon">{action['icon']}</div>
-                <div class="action-text">
-                    <strong>{action['title']}</strong><br/>
-                    <span style="font-size:0.9rem; color:#8b949e;">{action['desc']}</span>
-                </div>
-            </div>
-        ''', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        "local": [2400, 2300, 2200, 2100, 2000, 2500, 260
