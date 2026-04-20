@@ -5,23 +5,23 @@ import plotly.express as px
 # 1. 페이지 설정
 st.set_page_config(page_title="🎨 힙한 정관장 대시보드", layout="wide")
 
-# 2. 구글 스프레드시트 주소 연동
+# 2. 구글 스프레드시트 주소 연동 (CSV 변환 주소 확인)
 GSHEET_URL = "https://docs.google.com/spreadsheets/d/1vCbyrVMsWOuVMTMWasIfW3-u9wJqCc-nAJn7C-WKQuo/export?format=csv"
 
 @st.cache_data(ttl=60)
 def load_gsheet_data():
     try:
-        # 구글 시트 데이터를 읽어옵니다.
+        # 데이터 로드 및 양끝 공백 제거 (KeyError 방지)
         df = pd.read_csv(GSHEET_URL)
+        df.columns = df.columns.str.strip() 
         return df
     except Exception as e:
-        # 연결 실패 시 보여줄 기본 데이터 정의
         return pd.DataFrame({
             "title": ["🚀 수도권 판매 성장", "🎯 핵심 타겟 비중", "🔥 키워드 증가", "⚠️ 지방 판매 추이"],
             "value": ["0%", "0%", "0%", "0%"]
         })
 
-# 3. 스타일 설정 (CSS)
+# 3. 스타일 설정 (SyntaxError 방지: 따옴표 확인)
 st.markdown("""
 <style>
     .stApp { background-color: #0d1117; color: #c9d1d9; }
@@ -40,7 +40,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 4. 데이터 로드 및 차트 데이터 정의
+# 4. 데이터 로드
 df_metrics = load_gsheet_data()
 
 MARKETING_DATA = {
@@ -49,43 +49,32 @@ MARKETING_DATA = {
 }
 
 # 5. 레이아웃 구현
-# 잘려있던 제목 부분을 복구했습니다.
 st.markdown('<h1 class="neon-title">EVERYTIME BALANCE</h1>', unsafe_allow_html=True)
 
-# --- 상단 지표 영역 (구글 시트 연동) ---
-if not df_metrics.empty:
+# --- 상단 지표 영역 ---
+if not df_metrics.empty and 'title' in df_metrics.columns:
     cols = st.columns(len(df_metrics))
     for i, row in df_metrics.iterrows():
         with cols[i]:
             st.metric(label=row["title"], value=row["value"])
+else:
+    st.error("스프레드시트의 헤더(1행)를 'title', 'value'로 설정해주세요.")
 
 st.write("")
 
-# --- 중간 차트 영역 ---
-c1, c2 = st.columns(2)
+# --- 중간 차트 영역 (TypeError 해결) ---
+c1, c2 = st.columns(2) #
 
 with c1:
     st.markdown('<div class="chart-card"><b>📍 판매량 현황</b>', unsafe_allow_html=True)
     fig1 = px.bar(x=MARKETING_DATA["sales"]["labels"], y=MARKETING_DATA["sales"]["metro"], color_discrete_sequence=['#ff00de'])
-    fig1.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)', 
-        plot_bgcolor='rgba(0,0,0,0)', 
-        font_color="white", 
-        height=300,
-        margin=dict(l=20, r=20, t=20, b=20)
-    )
+    fig1.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color="white", height=300)
     st.plotly_chart(fig1, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with c2:
     st.markdown('<div class="chart-card"><b>📈 키워드 트렌드</b>', unsafe_allow_html=True)
     fig2 = px.line(x=MARKETING_DATA["keywords"]["labels"], y=MARKETING_DATA["keywords"]["hiking"], color_discrete_sequence=['#0ae'])
-    fig2.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)', 
-        plot_bgcolor='rgba(0,0,0,0)', 
-        font_color="white", 
-        height=300,
-        margin=dict(l=20, r=20, t=20, b=20)
-    )
+    fig2.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', font_color="white", height=300)
     st.plotly_chart(fig2, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
